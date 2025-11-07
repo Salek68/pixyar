@@ -1,0 +1,25 @@
+{
+    "name": "ارزون یاب",
+    "short_name": "ارزون یاب",
+    "start_url": "/",
+    "theme_color": "#007bff",
+    "background_color": "#ffffff",
+    "display": "standalone",
+    "status_bar": "#007bff",
+    "orientation": "portrait",
+    "icons": [
+        {
+            "src": "/pwa/icons/icon-192x192.png",
+            "sizes": "192x192",
+            "purpose": "any"
+        },
+        {
+            "src": "/pwa/icons/icon-512x512.png",
+            "sizes": "512x512",
+            "purpose": "any"
+        }
+    ],
+    "service_worker": {
+        "path": "/pwa/service-worker.js"
+    }
+}
