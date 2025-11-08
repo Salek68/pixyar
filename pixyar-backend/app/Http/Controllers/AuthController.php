@@ -67,6 +67,7 @@ class AuthController extends Controller
         // ایجاد توکن API
         $token = $user->createToken('auth_token')->plainTextToken;
 
+
         return response()->json([
             'message'=>'ورود موفقیت آمیز بود',
             'user'=> $user,

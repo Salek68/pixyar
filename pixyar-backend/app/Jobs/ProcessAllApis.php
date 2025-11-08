@@ -8,6 +8,7 @@ use App\Models\InstagramPost;
 use Illuminate\Bus\Queueable;
 use App\Models\InstagramComment;
 use App\Models\InstagramProfile;
+use App\Models\InstagramProfileSnapshot;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Queue\SerializesModels;
@@ -63,9 +64,10 @@ $response = Http::get("https://proxy-steel-beta-96.vercel.app/api/proxy?$query")
 
         $data = $response->json();
 
-        $profile = InstagramProfile::updateOrCreate(
+   $profile = InstagramProfile::updateOrCreate(
             ['user_id'=>$this->userId,'username'=>$this->username],
             [
+              
                 'full_name'        => $data['full_name'] ?? '',
                 'profile_pic'      => $data['profile_pic_url_hd'] ?? ($data['profile_pic_url'] ?? ''),
                 'biography'        => $data['biography'] ?? '',
@@ -85,6 +87,7 @@ $response = Http::get("https://proxy-steel-beta-96.vercel.app/api/proxy?$query")
                 'fetched_at' => now()
             ]
         );
+
 
         ActivityLog::create([
             'user_id' => $this->userId,
@@ -187,6 +190,18 @@ $responsePosts = Http::get("https://proxy-steel-beta-96.vercel.app/api/proxy", [
             'avg_likes'       => $like_avg,
             'avg_comments'    => $comment_avg,
         ]);
+
+        $profile_snapshot = InstagramProfileSnapshot::create(
+    [
+        'profile_id' => $profile->id,
+        'followers_count'  => $data['edge_followed_by']['count'] ?? 0,
+        'following_count'  => $data['edge_follow']['count'] ?? 0,
+        'posts_count'      => $data['edge_owner_to_timeline_media']['count'] ?? 0,
+         'engagement_rate' => $engagement_rate,
+            'avg_likes'       => $like_avg,
+            'avg_comments'    => $comment_avg,
+    ]
+);
 
     }
 }

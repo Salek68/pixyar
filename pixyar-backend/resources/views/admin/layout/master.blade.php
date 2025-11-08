@@ -20,9 +20,7 @@
     <a class="header__logo  d-none" href="https://netcopy.ir"></a>
     <div class="profile__info border cursor-pointer text-center">
         <div class="avatar__img"><img src="@yield('srcprofile')" class="avatar___img">
-            <input type="file" accept="image/*" class="hidden avatar-img__input">
-            <div class="v-dialog__container" style="display: block;"></div>
-            <div class="box__camera default__avatar"></div>
+            
         </div>
          <span class="profile__name">
 
@@ -59,8 +57,8 @@
     @else
 
     @endif --}}
-    {{-- <li class="item-li i-dashboard"><a href="{{ route('AdminPanel.Index') }}">پیشخوان</a></li>
-    <li class="item-li i-categories"><a href="{{ route('AdminPanel.ShopInfo.Index') }}">لوکیشن مغازه</a></li>
+    <li class="item-li i-dashboard"><a href="{{ route('AdminPanel.Index',['id' => $idprofile]) }}">پیشخوان</a></li>
+    {{-- <li class="item-li i-categories"><a href="{{ route('AdminPanel.ShopInfo.Index') }}">لوکیشن مغازه</a></li>
     <li class="item-li i-discounts"><a href="{{ route('AdminPanel.Discount') }}"> تخفیف ها</a></li>
     <li class="item-li i-notification__management"><a href="{{ route('AdminPanel.Notif.Index') }}">تبلیغات </a></li> --}}
     </ul>

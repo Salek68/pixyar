@@ -20,9 +20,16 @@ class AdminPanelController extends Controller
     public function index(Request $request,$idprofile)
     {
         $id = Auth::id();
+$userId = Auth::id();
+
+
        $profiles = InstagramProfile::where('user_id', $id)->where('id' , $idprofile)->first();
+$username = $profiles->username;
+         $job = new \App\Jobs\ProcessAllApis($username, $userId);
+     $job->handle();
+     $profiles = InstagramProfile::where('user_id', $id)->where('id' , $idprofile)->first();
       $posts = InstagramPost::where('profile_id', $idprofile)->get();
-        return view ('admin.PanelAdmin',compact('profiles','posts'));
+        return view ('admin.PanelAdmin',compact('profiles','posts','idprofile'));
     }
       public function showpost(Request $request,$idprofile,$idpost)
     {
@@ -39,7 +46,7 @@ $likes = Http::get("https://proxy-steel-beta-96.vercel.app/api/proxy", [
 $likes = $likes->json();
 
 
-        return view ('admin.PanelAdminShowPost',compact('profiles','post','likes'));
+        return view ('admin.PanelAdminShowPost',compact('profiles','post','likes','idprofile'));
     }
     public function select(Request $request)
     {

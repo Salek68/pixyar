@@ -11,7 +11,7 @@
 
         {{-- بخش بالا: اطلاعات کاربر --}}
         <div class="flex items-center gap-3 p-5 border-b border-white/10">
-            <img src="{{ asset('admin/img/pro.jpg') }}" alt="profile" class="w-12 h-12 rounded-full border border-white/20">
+            <img src=" https://proxy-steel-beta-96.vercel.app/api/proxy-image?url={{$post->profile->profile_pic}}" alt="profile" class="w-12 h-12 rounded-full border border-white/20">
             <div>
                 <h2 class="font-semibold text-lg">{{ $post->profile->username }}</h2>
                 <p class="text-sm text-gray-400">{{ \Carbon\Carbon::parse($post->created_at)->diffForHumans() }}</p>
