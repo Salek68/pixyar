@@ -20,7 +20,7 @@
     <a class="header__logo  d-none" href="https://netcopy.ir"></a>
     <div class="profile__info border cursor-pointer text-center">
         <div class="avatar__img"><img src="@yield('srcprofile')" class="avatar___img">
-            
+
         </div>
          <span class="profile__name">
 
@@ -58,9 +58,9 @@
 
     @endif --}}
     <li class="item-li i-dashboard"><a href="{{ route('AdminPanel.Index',['id' => $idprofile]) }}">پیشخوان</a></li>
-    {{-- <li class="item-li i-categories"><a href="{{ route('AdminPanel.ShopInfo.Index') }}">لوکیشن مغازه</a></li>
-    <li class="item-li i-discounts"><a href="{{ route('AdminPanel.Discount') }}"> تخفیف ها</a></li>
-    <li class="item-li i-notification__management"><a href="{{ route('AdminPanel.Notif.Index') }}">تبلیغات </a></li> --}}
+    <li class="item-li i-categories"><a href="{{ route('AdminPanel.bestTimeHeatmap' ,['idprofile' => $idprofile]) }}">  تقویم محتوایی </a></li>
+    <li class="item-li i-discounts"><a href="{{ route('AdminPanel.followersGrowth' ,['idprofile' => $idprofile]) }}">  نمودار رشد فالوئرها</a></li>
+    {{-- <li class="item-li i-notification__management"><a href="{{ route('AdminPanel.Notif.Index') }}">تبلیغات </a></li> --}}
     </ul>
 
 </div>
