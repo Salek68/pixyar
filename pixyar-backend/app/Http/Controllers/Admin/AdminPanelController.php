@@ -29,14 +29,16 @@ class AdminPanelController extends Controller
         $id = Auth::id();
        $profiles = InstagramProfile::where('user_id', $id)->where('id' , $idprofile)->first();
       $post = InstagramPost::with(['profile.user','comments'])->where('profile_id', $idprofile)->where('id',$idpost)->first();
-      $likes = Http::withHeaders([
-            'X-Rapidapi-Key' => '26d6bc2669msh34bc749da31f3a5p10fb9ajsnbbbf46a26c5d',
-            'X-Rapidapi-Host' => 'instagram-social-api.p.rapidapi.com'
-        ])->get('https://instagram-social-api.p.rapidapi.com/v1/likes', [
-            'code_or_id_or_url' => $post->shortcode
-        ]);
- $data = $likes->json();
- dd($data);
+
+$likes = Http::get("https://proxy-steel-beta-96.vercel.app/api/proxy", [
+    'url' => 'https://instagram-social-api.p.rapidapi.com/v1/likes',
+    'host' => 'instagram-social-api.p.rapidapi.com',
+    'code_or_id_or_url' => $post->shortcode
+]);
+
+$likes = $likes->json();
+
+
         return view ('admin.PanelAdminShowPost',compact('profiles','post','likes'));
     }
     public function select(Request $request)

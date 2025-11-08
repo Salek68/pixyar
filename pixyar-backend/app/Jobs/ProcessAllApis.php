@@ -2,18 +2,19 @@
 
 namespace App\Jobs;
 
-use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Foundation\Bus\Dispatchable;
-use Illuminate\Queue\InteractsWithQueue;
-use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\Http;
-use App\Models\InstagramProfile;
-use App\Models\InstagramPost;
-use App\Models\InstagramComment;
 use App\Models\ApiRequest;
 use App\Models\ActivityLog;
+use App\Models\InstagramPost;
+use Illuminate\Bus\Queueable;
+use App\Models\InstagramComment;
+use App\Models\InstagramProfile;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Queue\SerializesModels;
+use Illuminate\Queue\InteractsWithQueue;
+
+use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Foundation\Bus\Dispatchable;
 
 class ProcessAllApis implements ShouldQueue
 {
@@ -37,12 +38,17 @@ class ProcessAllApis implements ShouldQueue
         // 1. Fetch Profile
         // ===================
         $startTime = microtime(true);
-        $response = Http::withHeaders([
-            'x-rapidapi-host' => 'simple-instagram-api.p.rapidapi.com',
-            'x-rapidapi-key' => '26d6bc2669msh34bc749da31f3a5p10fb9ajsnbbbf46a26c5d'
-        ])->get("https://simple-instagram-api.p.rapidapi.com/account-info", [
-            'username' => $this->username
-        ]);
+
+$url = 'https://simple-instagram-api.p.rapidapi.com/account-info';
+$query = http_build_query([
+    'username' => $this->username,
+    'host' => 'simple-instagram-api.p.rapidapi.com'
+    ,'url' => $url
+]);
+
+$response = Http::get("https://proxy-steel-beta-96.vercel.app/api/proxy?$query");
+
+
         $endTime = microtime(true);
 
         ApiRequest::create([
@@ -91,12 +97,13 @@ class ProcessAllApis implements ShouldQueue
         // 2. Fetch Posts
         // ===================
         $startTime = microtime(true);
-        $responsePosts = Http::withHeaders([
-            'X-Rapidapi-Key'=>'26d6bc2669msh34bc749da31f3a5p10fb9ajsnbbbf46a26c5d',
-            'X-Rapidapi-Host'=>'instagram-social-api.p.rapidapi.com'
-        ])->get("https://instagram-social-api.p.rapidapi.com/v1/posts", [
-            'username_or_id_or_url' => $this->username
-        ]);
+
+$responsePosts = Http::get("https://proxy-steel-beta-96.vercel.app/api/proxy", [
+    'url' => 'https://instagram-social-api.p.rapidapi.com/v1/posts',
+    'host' => 'instagram-social-api.p.rapidapi.com',
+    'username_or_id_or_url' => $this->username
+]);
+
         $endTime = microtime(true);
 
         ApiRequest::create([
@@ -133,12 +140,15 @@ class ProcessAllApis implements ShouldQueue
             // 3. Fetch Comments
             // ===================
             $startTime = microtime(true);
-            $responseComments = Http::withHeaders([
-                'X-Rapidapi-Key'=>'26d6bc2669msh34bc749da31f3a5p10fb9ajsnbbbf46a26c5d',
-                'X-Rapidapi-Host'=>'instagram-social-api.p.rapidapi.com'
-            ])->get("https://instagram-social-api.p.rapidapi.com/v1/comments", [
-                'code_or_id_or_url'=>$post['code']
-            ]);
+
+       $responseComments = Http::get("https://proxy-steel-beta-96.vercel.app/api/proxy", [
+    'url' => 'https://instagram-social-api.p.rapidapi.com/v1/comments',
+    'host' => 'instagram-social-api.p.rapidapi.com',
+    'code_or_id_or_url' => $post['code']
+]);
+
+
+
             $endTime = microtime(true);
 
             ApiRequest::create([

@@ -38,10 +38,10 @@
 
             {{-- تصویر یا ویدیو با ابعاد ثابت --}}
             @if($post->media_type == 'image')
-                <img src="{{ $post->media_url }}" alt="Post Image" class="w-100 instagram-media mb-2">
+                <img src="https://proxy-steel-beta-96.vercel.app/api/proxy-image?url={{ urlencode($post->thumbnail_url) }}" alt="Post Image" class="w-100 instagram-media mb-2">
             @elseif($post->media_type == 'video')
                 <video controls class="w-100 instagram-media mb-2">
-                    <source src="{{ $post->media_url }}" type="video/mp4">
+                    <source src="https://proxy-steel-beta-96.vercel.app/api/proxy-image?url={{ urlencode($post->media_url) }}" type="video/mp4">
                     مرورگر شما ویدیو را پشتیبانی نمی‌کند.
                 </video>
             @endif

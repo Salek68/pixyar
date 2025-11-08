@@ -98,6 +98,9 @@ const app = Vue.createApp({
         const res = await axios.post('/login', this.loginForm);
         alert('ورود موفقیت آمیز بود!');
         // اینجا می‌تونی کارهای بعد از لاگین مثل ذخیره توکن انجام بدی
+         setTimeout(() => {
+            window.location.href = "{{ route('AdminPanel.starter') }}";
+        }, 500);
       } catch (err) {
         this.error = err.response?.data?.message || 'خطا در ورود';
       }

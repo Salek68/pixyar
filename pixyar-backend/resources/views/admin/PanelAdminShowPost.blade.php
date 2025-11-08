@@ -22,10 +22,10 @@
         <div class="relative w-full">
             @if($post->type === 'video')
                 <video controls class="w-full max-h-[600px] object-cover rounded-none">
-                    <source src="{{ $post->media_url }}" type="video/mp4">
+                    <source src="https://proxy-steel-beta-96.vercel.app/api/proxy-image?url={{ urlencode($post->media_url ?? asset('admin/img/pro.jpg')) }}" type="video/mp4">
                 </video>
             @else
-                <img src="{{ $post->thumbnail_url }}" alt="post image" class="w-full max-h-[600px] object-cover rounded-none">
+                <img src="https://proxy-steel-beta-96.vercel.app/api/proxy-image?url={{ urlencode($post->thumbnail_url ?? asset('admin/img/pro.jpg')) }}" alt="post image" class="w-full max-h-[600px] object-cover rounded-none">
             @endif
         </div>
 
@@ -54,22 +54,24 @@
             <a href="{{ url()->previous() }}" class="hover:text-gray-100 transition"><i class="fa-solid fa-arrow-right"></i> بازگشت</a>
         </div>
 
-        {{-- لیست لایک‌ها --}}
-        @if($likes && count($likes) > 0)
-            <div class="px-5 py-4 border-t border-white/10">
-                <h3 class="font-semibold text-lg mb-3 text-pink-400 flex items-center gap-2">
-                    <i class="fa-solid fa-heart"></i> کاربرانی که لایک کرده‌اند
-                </h3>
-                <div class="flex flex-wrap gap-3">
-                    @foreach($likes as $like)
-                        <div class="flex items-center gap-2 bg-white/10 hover:bg-white/20 backdrop-blur-sm rounded-full px-3 py-1.5 text-sm transition-all duration-300">
-                            <img src="{{ $like->user->profile_pic ?? asset('admin/img/pro.jpg') }}" class="w-8 h-8 rounded-full border border-white/20" alt="">
-                            <span>{{ $like->user->username }}</span>
-                        </div>
-                    @endforeach
+      {{-- لیست لایک‌ها --}}
+@if(isset($likes['data']['items']) && count($likes['data']['items']) > 0)
+    <div class="px-5 py-4 border-t border-white/10">
+        <h3 class="font-semibold text-lg mb-3 text-pink-400 flex items-center gap-2">
+            <i class="fa-solid fa-heart"></i> کاربرانی که لایک کرده‌اند
+        </h3>
+        <div class="flex flex-wrap gap-3">
+            @foreach($likes['data']['items'] as $like)
+                <div class="flex items-center gap-2 bg-white/10 hover:bg-white/20 backdrop-blur-sm rounded-full px-3 py-1.5 text-sm transition-all duration-300">
+                    <img src="https://proxy-steel-beta-96.vercel.app/api/proxy-image?url={{ urlencode($like['profile_pic_url'] ?? asset('admin/img/pro.jpg')) }}" class="w-8 h-8 rounded-full border border-white/20" alt="">
+
+                    <span>{{ $like['full_name'] ?? 'کاربر ناشناس' }} - @ {{ $like['username'] }} </span>
                 </div>
-            </div>
-        @endif
+            @endforeach
+        </div>
+    </div>
+@endif
+
 
         {{-- لیست کامنت‌ها --}}
         @if($post->comments && count($post->comments) > 0)
@@ -80,7 +82,7 @@
                 <div class="space-y-3 max-h-[300px] overflow-y-auto pr-2">
                     @foreach($post->comments as $comment)
                         <div class="flex items-start gap-3 bg-white/5 hover:bg-white/10 rounded-xl p-3 transition">
-                            <img src="{{ asset('admin/img/pro.jpg') }}" class="w-8 h-8 rounded-full border border-white/10" alt="">
+                            <img src="https://proxy-steel-beta-96.vercel.app/api/proxy-image?url={{ urlencode($comment->profile_pic_url ?? asset('admin/img/pro.jpg')) }}" class="w-8 h-8 rounded-full border border-white/10" alt="">
                             <div>
                                 <p class="font-semibold text-gray-100">{{ $comment->username }}</p>
                                 <p class="text-gray-300 text-sm mt-1">{{ $comment->text }}</p>
