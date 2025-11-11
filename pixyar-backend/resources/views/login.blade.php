@@ -57,6 +57,15 @@
         <label class="block mb-1 font-semibold">ایمیل</label>
         <input type="email" v-model="registerForm.email" class="w-full border px-3 py-2 rounded" required>
       </div>
+       <div class="mb-4">
+       <label class="block mb-1 font-semibold">انتخاب پلن</label>
+            <select v-model="registerForm.plan" class="w-full border px-3 py-2 rounded" required>
+                <option value="">انتخاب کنید</option>
+                <option value="free">Free</option>
+                <option value="pro">Pro</option>
+                <option value="business">business</option>
+            </select>
+      </div>
       <div class="mb-4">
         <label class="block mb-1 font-semibold">رمز عبور</label>
         <input type="password" v-model="registerForm.password" class="w-full border px-3 py-2 rounded" required>
@@ -86,6 +95,7 @@ const app = Vue.createApp({
       registerForm: {
         name: '',
         email: '',
+        plan: '',
         password: '',
         password_confirmation: ''
       }

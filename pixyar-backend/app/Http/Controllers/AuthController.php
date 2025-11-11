@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
+use Carbon\Carbon;
 use App\Models\User;
+use App\Models\Subscription;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class AuthController extends Controller
@@ -28,7 +30,39 @@ class AuthController extends Controller
             'name'=> $request->name,
             'email'=> $request->email,
             'password'=> $request->password, // هش توسط مدل User انجام می‌شود
-            'plan'=> 'free',
+            'plan'=> $request->plan,
+        ]);
+         $plan = $request->plan;
+
+        // ثبت سابسکریپشن
+        switch ($plan) {
+            case 'free':
+                $price = 0;
+                $status = 'active';
+                $expires_at = null;
+                break;
+            case 'pro':
+                $price = 100000;
+                $status = 'canceled';
+                $expires_at = Carbon::now()->addMonth();
+                break;
+            case 'business':
+                $price = 200000;
+                $status = 'canceled';
+                $expires_at = Carbon::now()->addMonth();
+                break;
+            default:
+                return response()->json([
+                    'message' => 'پلن اشتباه است'
+                ], 422);
+        }
+
+        Subscription::create([
+            'user_id' => $user->id,
+            'plan' => $plan,
+            'price' => $price,
+            'status' => $status,
+            'expires_at' => $expires_at
         ]);
 
         // ایجاد توکن API
@@ -46,33 +80,58 @@ class AuthController extends Controller
      */
     public function login(Request $request)
     {
-        $request->validate([
-            'email'=> 'required|email',
-            'password'=> 'required|string',
-        ]);
+      $request->validate([
+    'email' => 'required|email',
+    'password' => 'required|string',
+]);
 
-        $user = User::where('email', $request->email)->first();
+$user = User::where('email', $request->email)->first();
 
-        if(!$user || !password_verify($request->password, $user->password)){
-            return response()->json(['message'=>'ایمیل یا رمز عبور اشتباه است'],401);
-        }
+if (!$user || !password_verify($request->password, $user->password)) {
+    return response()->json(['message' => 'ایمیل یا رمز عبور اشتباه است'], 401);
+}
 
-        // بروزرسانی زمان آخرین ورود و IP
-        $user->last_login_at = now();
-        $user->signup_ip = $request->ip();
-        $user->save();
+$sub = Subscription::where('user_id', $user->id)->first();
 
+// اگر کاربر اشتراک نداشت، به پلن رایگان تنظیم کن
+if (!$sub) {
+    $sub = Subscription::create([
+        'user_id' => $user->id,
+        'plan' => 'free',
+        'status' => 'active',
+        'expires_at' => null,
+    ]);
+}
 
-           Auth::login($user);
-        // ایجاد توکن API
-        $token = $user->createToken('auth_token')->plainTextToken;
-
+// بررسی وضعیت اشتراک
+if ($sub->plan != "free") {
+    if ($sub->status != "active" || ($sub->expires_at && Carbon::now()->greaterThan($sub->expires_at))) {
+        // اتمام یا غیرفعال شدن اشتراک → برگرد به پلن رایگان
+        $sub->plan = "free";
+        $sub->status = "active";
+        $sub->expires_at = null;
+        $sub->save();
 
         return response()->json([
-            'message'=>'ورود موفقیت آمیز بود',
-            'user'=> $user,
-            'token'=> $token
-        ]);
+            'message' => 'اشتراک شما پایان رسیده است یا پرداخت نشده است. پلن شما به صورت خودکار به رایگان تغییر کرد. لطفا دوباره وارد شوید.'
+        ], 401);
+    }
+}
+
+// اگر اشتراک فعال است یا رایگان:
+$user->last_login_at = now();
+$user->signup_ip = $request->ip();
+$user->save();
+
+Auth::login($user);
+$token = $user->createToken('auth_token')->plainTextToken;
+
+return response()->json([
+    'message' => 'ورود موفقیت‌آمیز بود',
+    'user' => $user,
+    'token' => $token,
+]);
+
     }
 
     /**
