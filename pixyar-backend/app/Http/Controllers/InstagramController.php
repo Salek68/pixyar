@@ -29,11 +29,20 @@ class InstagramController extends Controller
         $username = $request->page_id;
 
 
-
-        // Dispatch Job برای پردازش پروفایل، پست و کامنت‌ها
-      $job = new \App\Jobs\ProcessAllApis($username, $userId);
+try {
+    //code...
+    $job = new ProcessAllApis($username, $userId);
 $job->handle();
 
+} catch (\Throwable $th) {
+    //throw $th;
+      return response()->json([
+        'message'=> $th->getMessage(),
+
+        ]);
+}
+        // Dispatch Job برای پردازش پروفایل، پست و کامنت‌ها
+      
 
         return response()->json([
             'message' => 'درخواست ثبت شد و پردازش پروفایل در پس‌زمینه انجام می‌شود. تا 3 ثانیه دیگر به صورت اتومات به پنل منتقل میشوید',

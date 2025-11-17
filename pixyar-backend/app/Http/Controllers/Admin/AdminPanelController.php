@@ -27,8 +27,17 @@ $userId = Auth::id();
 
        $profiles = InstagramProfile::where('user_id', $id)->where('id' , $idprofile)->first();
 $username = $profiles->username;
-         $job = new \App\Jobs\ProcessAllApis($username, $userId);
-     $job->handle();
+    //      $job = new \App\Jobs\ProcessAllApis($username, $userId);
+    //  $job->handle();
+
+//     $responsePosts = Http::withoutVerifying()->get("https://proxy-steel-beta-96.vercel.app/api/proxy", [
+//     'url' => 'https://instagram-social-api.p.rapidapi.com/v1/posts',
+//     'host' => 'instagram-social-api.p.rapidapi.com',
+//     'username_or_id_or_url' => $username
+// ]);
+//   $postsData = $responsePosts->json()['data']['items'] ?? [];
+//  dd($postsData);
+
      $profiles = InstagramProfile::where('user_id', $id)->where('id' , $idprofile)->first();
       $posts = InstagramPost::where('profile_id', $idprofile)->get();
         return view ('admin.PanelAdmin',compact('profiles','posts','idprofile'));
