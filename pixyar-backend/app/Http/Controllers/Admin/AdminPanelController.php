@@ -27,8 +27,10 @@ $userId = Auth::id();
 
        $profiles = InstagramProfile::where('user_id', $id)->where('id' , $idprofile)->first();
 $username = $profiles->username;
-         $job = new \App\Jobs\ProcessAllApis($username, $userId);
-     $job->handle();
+    //      $job = new \App\Jobs\ProcessAllApis($username, $userId);
+    //  $job->handle();
+
+
      $profiles = InstagramProfile::where('user_id', $id)->where('id' , $idprofile)->first();
       $posts = InstagramPost::where('profile_id', $idprofile)->get();
         return view ('admin.PanelAdmin',compact('profiles','posts','idprofile'));
@@ -44,7 +46,7 @@ $likes = Http::withoutVerifying()->get("https://proxy-steel-beta-96.vercel.app/a
     'host' => 'instagram-social-api.p.rapidapi.com',
     'code_or_id_or_url' => $post->shortcode
 ]);
- 
+
 $likes = $likes->json();
 
 
