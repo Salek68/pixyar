@@ -47,7 +47,7 @@ $query = http_build_query([
     ,'url' => $url
 ]);
 
-$response = Http::get("https://proxy-steel-beta-96.vercel.app/api/proxy?$query");
+$response = Http::withoutVerifying()->get("https://proxy-steel-beta-96.vercel.app/api/proxy?$query");
 
 
         $endTime = microtime(true);
@@ -101,7 +101,7 @@ $response = Http::get("https://proxy-steel-beta-96.vercel.app/api/proxy?$query")
         // ===================
         $startTime = microtime(true);
 
-$responsePosts = Http::get("https://proxy-steel-beta-96.vercel.app/api/proxy", [
+$responsePosts = Http::withoutVerifying()->get("https://proxy-steel-beta-96.vercel.app/api/proxy", [
     'url' => 'https://instagram-social-api.p.rapidapi.com/v1/posts',
     'host' => 'instagram-social-api.p.rapidapi.com',
     'username_or_id_or_url' => $this->username
@@ -144,7 +144,7 @@ $responsePosts = Http::get("https://proxy-steel-beta-96.vercel.app/api/proxy", [
             // ===================
             $startTime = microtime(true);
 
-       $responseComments = Http::get("https://proxy-steel-beta-96.vercel.app/api/proxy", [
+       $responseComments = Http::withoutVerifying()->get("https://proxy-steel-beta-96.vercel.app/api/proxy", [
     'url' => 'https://instagram-social-api.p.rapidapi.com/v1/comments',
     'host' => 'instagram-social-api.p.rapidapi.com',
     'code_or_id_or_url' => $post['code']

@@ -39,7 +39,7 @@ $username = $profiles->username;
        $profiles = InstagramProfile::where('user_id', $id)->where('id' , $idprofile)->first();
       $post = InstagramPost::with(['profile.user','comments'])->where('profile_id', $idprofile)->where('id',$idpost)->first();
 
-$likes = Http::get("https://proxy-steel-beta-96.vercel.app/api/proxy", [
+$likes = Http::withoutVerifying()->get("https://proxy-steel-beta-96.vercel.app/api/proxy", [
     'url' => 'https://instagram-social-api.p.rapidapi.com/v1/likes',
     'host' => 'instagram-social-api.p.rapidapi.com',
     'code_or_id_or_url' => $post->shortcode

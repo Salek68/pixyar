@@ -99,6 +99,7 @@ if (!$sub) {
         'user_id' => $user->id,
         'plan' => 'free',
         'status' => 'active',
+        'price' => "0",
         'expires_at' => null,
     ]);
 }
