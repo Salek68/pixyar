@@ -30,11 +30,16 @@ $userId = Auth::id();
             ->orderBy('collected_at', 'desc')
             ->first();
 $username = $profiles->username;
-dd($snapshot->collected_at->diffInHours(now()));
-if (!$snapshot->collected_at || $snapshot->collected_at->diffInHours(now()) <= 5) {
-    dd("D");
-     // $job = new \App\Jobs\ProcessAllApis($username, $userId);
-   //$job->handle();
+$diffHours = $snapshot->collected_at->diffInHours(now('Asia/Tehran')) + 3.5;
+
+
+$hours = floor($diffHours);
+
+
+if (!$snapshot->collected_at || $hours >= 5) {
+
+     $job = new \App\Jobs\ProcessAllApis($username, $userId);
+   $job->handle();
 
 }
 
