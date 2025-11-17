@@ -30,9 +30,11 @@ $userId = Auth::id();
             ->orderBy('collected_at', 'desc')
             ->first();
 $username = $profiles->username;
-if (!$snapshot->collected_at || $snapshot->collected_at->diffInHours(now()) >= 5) {
-      $job = new \App\Jobs\ProcessAllApis($username, $userId);
-   $job->handle();
+dd($snapshot->collected_at->diffInHours(now()));
+if (!$snapshot->collected_at || $snapshot->collected_at->diffInHours(now()) <= 5) {
+    dd("D");
+     // $job = new \App\Jobs\ProcessAllApis($username, $userId);
+   //$job->handle();
 
 }
 
