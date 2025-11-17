@@ -195,9 +195,9 @@ $responsePosts = Http::withoutVerifying()->get("https://proxy-steel-beta-96.verc
         $profile_snapshot = InstagramProfileSnapshot::create(
     [
         'profile_id' => $profile->id,
-        'followers_count'  => $data['edge_followed_by']['count'] ?? 0,
-        'following_count'  => $data['edge_follow']['count'] ?? 0,
-        'posts_count'      => $data['edge_owner_to_timeline_media']['count'] ?? 0,
+        'followers_count'  => $data['follower_count'] ?? 0,
+        'following_count'  => $data['following_count'] ?? 0,
+        'posts_count'      => $data['media_count'] ?? 0,
          'engagement_rate' => $engagement_rate,
             'avg_likes'       => $like_avg,
             'avg_comments'    => $comment_avg,

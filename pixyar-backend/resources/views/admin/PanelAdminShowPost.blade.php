@@ -3,7 +3,7 @@
 داشبورد - {{$profiles->full_name}}
 @endsection
 @section('srcprofile')
-{{$profiles->profile_pic}}
+https://proxy-steel-beta-96.vercel.app/api/proxy-image?url={{ urlencode($post->profile->profile_pic ?? asset('admin/img/pro.jpg')) }}
 @endsection
 
 @section('main-content')
@@ -64,7 +64,7 @@
                 @foreach($likes['data']['items'] as $like)
                     <div class="flex items-center gap-2 bg-white/10 hover:bg-white/20 backdrop-blur-sm rounded-full px-3 py-1.5 text-sm transition-all duration-300">
                         <img src="https://proxy-steel-beta-96.vercel.app/api/proxy-image?url={{ urlencode($like['profile_pic_url'] ?? asset('admin/img/pro.jpg')) }}" class="w-8 h-8 rounded-full border border-white/20" alt="">
-                        <span>{{ $like['full_name'] ?? 'کاربر ناشناس' }} - @{{ $like['username'] }}</span>
+                        <span>{{ $like['full_name'] ?? 'کاربر ناشناس' }} </span>
                     </div>
                 @endforeach
             </div>
@@ -80,7 +80,6 @@
             <div class="space-y-3 max-h-[300px] overflow-y-auto pr-2">
                 @foreach($post->comments as $comment)
                     <div class="flex items-start gap-3 bg-white/5 hover:bg-white/10 rounded-xl p-3 transition">
-                        <img src="https://proxy-steel-beta-96.vercel.app/api/proxy-image?url={{ urlencode($comment->profile_pic_url ?? asset('admin/img/pro.jpg')) }}" class="w-8 h-8 rounded-full border border-white/10" alt="">
                         <div>
                             <p class="font-semibold text-gray-100">{{ $comment->username }}</p>
                             <p class="text-gray-300 text-sm mt-1">{{ $comment->text }}</p>

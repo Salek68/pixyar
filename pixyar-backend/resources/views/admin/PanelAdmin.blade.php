@@ -3,8 +3,8 @@
 داشبورد - {{$profiles->full_name}}
 @endsection
 @section('srcprofile')
- https://proxy-steel-beta-96.vercel.app/api/proxy-image?url={{$profiles->profile_pic}}
-@endsection
+https://proxy-steel-beta-96.vercel.app/api/proxy-image?url={{ urlencode($profiles->profile_pic ?? asset('admin/img/pro.jpg')) }}
+@endsection 
 @section('main-content')
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <!-- اول Vue -->
