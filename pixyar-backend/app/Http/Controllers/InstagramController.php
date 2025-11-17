@@ -2,11 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use App\Jobs\ProcessAllApis;
-use Illuminate\Support\Facades\Auth;
-use App\Models\Subscription;
 use Carbon\Carbon;
+use App\Jobs\ProcessAllApis;
+use App\Models\Subscription;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Http;
 
 class InstagramController extends Controller
 {
@@ -22,27 +23,20 @@ class InstagramController extends Controller
     {
         $request->validate([
             'page_id' => 'required|string',
-            
+
         ]);
 
         $userId = Auth::id();
         $username = $request->page_id;
 
 
-try {
-    //code...
+
     $job = new ProcessAllApis($username, $userId);
 $job->handle();
 
-} catch (\Throwable $th) {
-    //throw $th;
-      return response()->json([
-        'message'=> $th->getMessage(),
 
-        ]);
-}
         // Dispatch Job برای پردازش پروفایل، پست و کامنت‌ها
-      
+
 
         return response()->json([
             'message' => 'درخواست ثبت شد و پردازش پروفایل در پس‌زمینه انجام می‌شود. تا 3 ثانیه دیگر به صورت اتومات به پنل منتقل میشوید',

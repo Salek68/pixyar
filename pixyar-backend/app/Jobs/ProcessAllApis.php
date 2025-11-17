@@ -40,10 +40,10 @@ class ProcessAllApis implements ShouldQueue
         // ===================
         $startTime = microtime(true);
 
-$url = 'https://simple-instagram-api.p.rapidapi.com/account-info';
+$url = 'https://instagram-social-api.p.rapidapi.com/v1/info';
 $query = http_build_query([
-    'username' => $this->username,
-    'host' => 'simple-instagram-api.p.rapidapi.com'
+    'username_or_id_or_url' => $this->username,
+    'host' => 'instagram-social-api.p.rapidapi.com'
     ,'url' => $url
 ]);
 
@@ -62,31 +62,32 @@ $response = Http::withoutVerifying()->get("https://proxy-steel-beta-96.vercel.ap
 
         if ($response->failed()) return;
 
-        $data = $response->json();
+        $data = $response->json()['data'];
 
    $profile = InstagramProfile::updateOrCreate(
-            ['user_id'=>$this->userId,'username'=>$this->username],
-            [
-              
-                'full_name'        => $data['full_name'] ?? '',
-                'profile_pic'      => $data['profile_pic_url_hd'] ?? ($data['profile_pic_url'] ?? ''),
-                'biography'        => $data['biography'] ?? '',
-                'website'          => $data['external_url'] ?? ($data['website'] ?? ''),
-                'is_verified'      => $data['is_verified'] ?? false,
-                'followers_count'  => $data['edge_followed_by']['count'] ?? 0,
-                'following_count'  => $data['edge_follow']['count'] ?? 0,
-                'posts_count'      => $data['edge_owner_to_timeline_media']['count'] ?? 0,
-                'country'          => $data['location']['name'] ?? null,
-                'language'         => $data['language'] ?? null,
-                'account_type'     => (!empty($data['is_business_account']) && $data['is_business_account'] ? 'business' :
-                                       (!empty($data['is_professional_account']) && $data['is_professional_account'] ? 'creator' :
-                                       'personal')),
-                'engagement_rate'  => $data['engagement_rate'] ?? 0,
-                'avg_likes'        => data_get($data, 'edge_media_to_caption.edges.0.node.text', 0),
-                'avg_comments'     => $data['edge_media_to_comment']['count'] ?? 0,
-                'fetched_at' => now()
-            ]
-        );
+    ['user_id' => $this->userId, 'username' => $this->username],
+    [
+        'full_name'       => $data['full_name'] ?? '',
+        'profile_pic'     => $data['profile_pic_url_hd'] ?? ($data['profile_pic_url'] ?? ''),
+        'biography'       => $data['biography'] ?? '',
+        'website'         => $data['external_url'] ?? ($data['website'] ?? ''),
+        'is_verified'     => $data['is_verified'] ?? false,
+        'followers_count' => $data['follower_count'] ?? 0,
+        'following_count' => $data['following_count'] ?? 0,
+        'posts_count'     => $data['media_count'] ?? 0,
+        'country'         => $data['location_data']['city_name'] ?? null,
+        'language'        => $data['language'] ?? null,
+        'account_type'    => isset($data['is_business']) && $data['is_business'] ? 'business' :
+                             (isset($data['account_type']) ?
+                                ($data['account_type'] == 1 ? 'creator' : 'personal')
+                                : 'personal'),
+        'engagement_rate' => $data['engagement_rate'] ?? 0,
+        'avg_likes'       => data_get($data, 'edge_media_to_caption.edges.0.node.text', 0),
+        'avg_comments'    => $data['edge_media_to_comment']['count'] ?? 0,
+        'fetched_at'      => now()
+    ]
+);
+
 
 
         ActivityLog::create([
