@@ -26,17 +26,17 @@ $userId = Auth::id();
 
 
        $profiles = InstagramProfile::where('user_id', $id)->where('id' , $idprofile)->first();
+     $snapshot = InstagramProfileSnapshot::where('profile_id', $profiles->id)
+            ->orderBy('collected_at', 'desc')
+            ->first();
 $username = $profiles->username;
-    //      $job = new \App\Jobs\ProcessAllApis($username, $userId);
-    //  $job->handle();
+if (!$snapshot->collected_at || $snapshot->collected_at->diffInHours(now()) >= 5) {
+      $job = new \App\Jobs\ProcessAllApis($username, $userId);
+   $job->handle();
 
-//     $responsePosts = Http::withoutVerifying()->get("https://proxy-steel-beta-96.vercel.app/api/proxy", [
-//     'url' => 'https://instagram-social-api.p.rapidapi.com/v1/posts',
-//     'host' => 'instagram-social-api.p.rapidapi.com',
-//     'username_or_id_or_url' => $username
-// ]);
-//   $postsData = $responsePosts->json()['data']['items'] ?? [];
-//  dd($postsData);
+}
+
+
 
 
      $profiles = InstagramProfile::where('user_id', $id)->where('id' , $idprofile)->first();
