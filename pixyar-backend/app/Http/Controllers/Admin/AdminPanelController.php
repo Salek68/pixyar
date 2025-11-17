@@ -30,6 +30,7 @@ $username = $profiles->username;
     //      $job = new \App\Jobs\ProcessAllApis($username, $userId);
     //  $job->handle();
 
+<<<<<<< HEAD
 //     $responsePosts = Http::withoutVerifying()->get("https://proxy-steel-beta-96.vercel.app/api/proxy", [
 //     'url' => 'https://instagram-social-api.p.rapidapi.com/v1/posts',
 //     'host' => 'instagram-social-api.p.rapidapi.com',
@@ -37,6 +38,8 @@ $username = $profiles->username;
 // ]);
 //   $postsData = $responsePosts->json()['data']['items'] ?? [];
 //  dd($postsData);
+=======
+>>>>>>> 73a2abab7444117b846f612bbc02771beaef20e4
 
      $profiles = InstagramProfile::where('user_id', $id)->where('id' , $idprofile)->first();
       $posts = InstagramPost::where('profile_id', $idprofile)->get();
@@ -53,7 +56,7 @@ $likes = Http::withoutVerifying()->get("https://proxy-steel-beta-96.vercel.app/a
     'host' => 'instagram-social-api.p.rapidapi.com',
     'code_or_id_or_url' => $post->shortcode
 ]);
- 
+
 $likes = $likes->json();
 
 
