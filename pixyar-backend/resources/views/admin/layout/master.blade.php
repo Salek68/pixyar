@@ -60,7 +60,7 @@
     <li class="item-li i-dashboard"><a href="{{ route('AdminPanel.Index',['id' => $idprofile]) }}">پیشخوان</a></li>
     <li class="item-li i-categories"><a href="{{ route('AdminPanel.bestTimeHeatmap' ,['idprofile' => $idprofile]) }}">  تقویم محتوایی </a></li>
     <li class="item-li i-discounts"><a href="{{ route('AdminPanel.followersGrowth' ,['idprofile' => $idprofile]) }}">  نمودار رشد فالوئرها</a></li>
-    {{-- <li class="item-li i-notification__management"><a href="{{ route('AdminPanel.Notif.Index') }}">تبلیغات </a></li> --}}
+    <li class="item-li i-notification__management"><a href="{{ route('AdminPanel.Raghib' ,['idprofile' => $idprofile]) }}">رقبا چه کردند؟ </a></li>
     </ul>
 
 </div>

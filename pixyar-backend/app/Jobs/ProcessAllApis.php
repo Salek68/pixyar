@@ -4,6 +4,8 @@ namespace App\Jobs;
 
 use App\Models\ApiRequest;
 use App\Models\ActivityLog;
+use App\Models\competitor_posts;
+use App\Models\CompetitorPost;
 use App\Models\InstagramPost;
 use Illuminate\Bus\Queueable;
 use App\Models\InstagramComment;
@@ -87,9 +89,74 @@ $response = Http::withoutVerifying()->get("https://proxy-steel-beta-96.vercel.ap
         'fetched_at'      => now()
     ]
 );
+        $responsePostC = Http::withoutVerifying()->get("https://proxy-steel-beta-96.vercel.app/api/proxy", [
+    'url' => 'https://instagram-social-api.p.rapidapi.com/v1/search_posts',
+    'host' => 'instagram-social-api.p.rapidapi.com',
+    'search_query' => $profile->full_name
+]);
+    $postsDatac = $responsePostC->json()['data']['items'] ?? [];
+foreach ($postsDatac as $post) {
+
+    // 1) استخراج امن caption
+    $captionText = null;
+
+    if (isset($post['caption']['text'])) {
+        $captionText = $post['caption']['text'];
+    }
+
+    // 2) اگر کپشن وجود ندارد → پست را ذخیره نکن (skip)
+    if (empty($captionText)) {
+        continue;
+    }
+
+    // 3) ادامه تحلیل فقط برای پست‌هایی که کپشن دارند
+    $captionLength = mb_strlen($captionText);
+
+    // استخراج هشتگ‌ها
+    preg_match_all('/#(\w+)/u', $captionText, $matches);
+    $hashtagsArray = $matches[0] ?? [];
+
+    // استخراج منشن‌ها
+    preg_match_all('/@(\w+)/u', $captionText, $mentionsMatch);
+    $mentionsArray = $mentionsMatch[0] ?? [];
+
+    competitor_posts::updateOrCreate(
+        [
+            'instagram_profile_id' => $profile->id,
+            'post_id'  => $post['code'] ?? null,
+        ],
+        [
+            'media_type'       => $post['media_format'] ?? 'image',
+            'media_url'        => $post['video_url'] ?? null,
 
 
+            'caption'          => $captionText,
+            'caption_length'   => $captionLength,
 
+            'hashtags'         => json_encode($hashtagsArray),
+            'hashtags_count'   => count($hashtagsArray),
+
+            'mentions_count'   => count($mentionsArray),
+
+            'like_count'       => $post['like_count'] ?? 0,
+            'comment_count'    => $post['comment_count'] ?? 0,
+            'view_count'       => $post['play_count'] ?? 0,
+
+        'share_count'       => $post['share_count'] ?? 0,
+            'save_count'        => $post['save_count'] ?? 0,
+            'video_duration'    => $post['video_duration'] ?? null,
+
+            'published_at'      => isset($post['published_at'])
+                                    ? date('Y-m-d H:i:s', strtotime($post['published_at']))
+                                    : null,
+
+            'taken_at'          => isset($post['taken_at_date'])
+                                    ? date('Y-m-d H:i:s', strtotime($post['taken_at_date']))
+                                    : null,
+
+        ]
+    );
+}
         ActivityLog::create([
             'user_id' => $this->userId,
             'action' => 'Fetch Profile',
@@ -107,6 +174,7 @@ $responsePosts = Http::withoutVerifying()->get("https://proxy-steel-beta-96.verc
     'host' => 'instagram-social-api.p.rapidapi.com',
     'username_or_id_or_url' => $this->username
 ]);
+
 
         $endTime = microtime(true);
 
@@ -192,6 +260,7 @@ $responsePosts = Http::withoutVerifying()->get("https://proxy-steel-beta-96.verc
             'avg_comments'    => $comment_avg,
         ]);
 
+
         $profile_snapshot = InstagramProfileSnapshot::create(
     [
         'profile_id' => $profile->id,
@@ -203,6 +272,9 @@ $responsePosts = Http::withoutVerifying()->get("https://proxy-steel-beta-96.verc
             'avg_comments'    => $comment_avg,
     ]
 );
+
+
+
 
     }
 }

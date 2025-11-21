@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use App\Models\InstagramPost;
 use App\Models\InstagramProfile;
 use App\Http\Controllers\Controller;
+use App\Models\competitor_posts;
 use App\Models\InstagramProfileSnapshot;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
@@ -21,6 +22,8 @@ class AdminPanelController extends Controller
 
     public function index(Request $request,$idprofile)
     {
+        set_time_limit(180);
+
         $id = Auth::id();
 $userId = Auth::id();
 
@@ -47,9 +50,105 @@ if (!$snapshot->collected_at || $hours >= 5) {
 
 
      $profiles = InstagramProfile::where('user_id', $id)->where('id' , $idprofile)->first();
+  
+
+
       $posts = InstagramPost::where('profile_id', $idprofile)->get();
         return view ('admin.PanelAdmin',compact('profiles','posts','idprofile'));
     }
+
+
+public function raghib(Request $request,$idprofile)
+    {
+        set_time_limit(180);
+
+        $id = Auth::id();
+$userId = Auth::id();
+
+
+      
+  
+
+
+
+
+     $profiles = InstagramProfile::where('user_id', $id)->where('id' , $idprofile)->first();
+      $responsePostC = Http::withoutVerifying()->get("https://proxy-steel-beta-96.vercel.app/api/proxy", [
+    'url' => 'https://instagram-social-api.p.rapidapi.com/v1/search_posts',
+    'host' => 'instagram-social-api.p.rapidapi.com',
+    'search_query' => $profiles->full_name
+]);
+    $postsDatac = $responsePostC->json()['data']['items'] ?? [];
+foreach ($postsDatac as $post) {
+
+    // 1) استخراج امن caption
+    $captionText = null;
+
+    if (isset($post['caption']['text'])) {
+        $captionText = $post['caption']['text'];
+    }
+
+    // 2) اگر کپشن وجود ندارد → پست را ذخیره نکن (skip)
+    if (empty($captionText)) {
+        continue;
+    }
+
+    // 3) ادامه تحلیل فقط برای پست‌هایی که کپشن دارند
+    $captionLength = mb_strlen($captionText);
+
+    // استخراج هشتگ‌ها
+    preg_match_all('/#(\w+)/u', $captionText, $matches);
+    $hashtagsArray = $matches[0] ?? [];
+
+    // استخراج منشن‌ها
+    preg_match_all('/@(\w+)/u', $captionText, $mentionsMatch);
+    $mentionsArray = $mentionsMatch[0] ?? [];
+
+    competitor_posts::updateOrCreate(
+        [
+            'instagram_profile_id' => $profiles->id,
+            'post_id'  => $post['code'] ?? null,
+        ],
+        [
+            'media_type'       => $post['media_format'] ?? 'image',
+            'media_url'        => $post['video_url'] ,
+
+
+            'caption'          => $captionText,
+            'caption_length'   => $captionLength,
+
+            'hashtags'         => json_encode($hashtagsArray),
+            'hashtags_count'   => count($hashtagsArray),
+
+            'mentions_count'   => count($mentionsArray),
+
+            'like_count'       => $post['like_count'] ?? 0,
+            'comment_count'    => $post['comment_count'] ?? 0,
+            'view_count'       => $post['play_count'] ?? 0,
+
+        'share_count'       => $post['share_count'] ?? 0,
+            'save_count'        => $post['save_count'] ?? 0,
+            'video_duration'    => $post['video_duration'] ?? null,
+
+            'published_at'      => isset($post['published_at'])
+                                    ? date('Y-m-d H:i:s', strtotime($post['published_at']))
+                                    : null,
+
+            'taken_at'          => isset($post['taken_at_date'])
+                                    ? date('Y-m-d H:i:s', strtotime($post['taken_at_date']))
+                                    : null,
+
+        ]
+    );
+
+}
+
+
+      $posts = competitor_posts::where('instagram_profile_id', $idprofile)->get();
+        return view ('admin.PanelAdminRaghib',compact('profiles','posts','idprofile'));
+    }
+
+
       public function showpost(Request $request,$idprofile,$idpost)
     {
         $id = Auth::id();
