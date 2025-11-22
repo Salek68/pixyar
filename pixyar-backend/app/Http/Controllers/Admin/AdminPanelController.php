@@ -10,6 +10,7 @@ use App\Models\InstagramProfile;
 use App\Http\Controllers\Controller;
 use App\Models\competitor_posts;
 use App\Models\InstagramProfileSnapshot;
+use App\Models\SuggestedCampaign;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
 
@@ -26,6 +27,8 @@ class AdminPanelController extends Controller
 
         $id = Auth::id();
 $userId = Auth::id();
+
+
 
 
        $profiles = InstagramProfile::where('user_id', $id)->where('id' , $idprofile)->first();
@@ -50,7 +53,7 @@ if (!$snapshot->collected_at || $hours >= 5) {
 
 
      $profiles = InstagramProfile::where('user_id', $id)->where('id' , $idprofile)->first();
-  
+
 
 
       $posts = InstagramPost::where('profile_id', $idprofile)->get();
@@ -66,8 +69,9 @@ public function raghib(Request $request,$idprofile)
 $userId = Auth::id();
 
 
-      
-  
+
+
+
 
 
 
@@ -146,6 +150,146 @@ foreach ($postsDatac as $post) {
 
       $posts = competitor_posts::where('instagram_profile_id', $idprofile)->get();
         return view ('admin.PanelAdminRaghib',compact('profiles','posts','idprofile'));
+    }
+
+
+    public function campain(Request $request,$idprofile)
+    {
+        set_time_limit(180);
+
+        $id = Auth::id();
+$userId = Auth::id();
+
+
+$myPosts = InstagramPost::where('profile_id', $idprofile)->get();
+$competitorPosts = competitor_posts::where('instagram_profile_id', $idprofile)->get();
+
+$hashtags = [];
+
+foreach ($competitorPosts as $post) {
+    $tags = json_decode($post->hashtags, true) ?? [];
+    foreach ($tags as $t) {
+        $hashtags[] = strtolower($t);
+    }
+}
+
+$hashtagsRepeated = array_count_values($hashtags);
+arsort($hashtagsRepeated); // مرتب‌سازی
+$topHashtags = array_slice(array_keys($hashtagsRepeated), 0, 15);
+
+$words = [];
+
+foreach ($competitorPosts as $p) {
+    if (!$p->caption) continue;
+
+    $text = strtolower($p->caption);
+    $parts = preg_split('/\s+/', $text);
+
+    foreach ($parts as $w) {
+        if (strlen($w) > 3) {
+            $words[] = $w;
+        }
+    }
+}
+
+$wordRepeated = array_count_values($words);
+arsort($wordRepeated);
+$topWords = array_slice(array_keys($wordRepeated), 0, 20);
+
+$hours = [];
+
+foreach ($competitorPosts as $p) {
+    if (!$p->taken_at) continue;
+
+    $h = date('H', strtotime($p->taken_at));
+    $hours[] = $h;
+}
+
+$bestHour = (!empty($hours)) ? array_keys(array_count_values($hours), max(array_count_values($hours)))[0] : null;
+
+function generateSmartCaption($topWords, $topHashtags) {
+
+    // ۱) متن پایه
+    $base = [
+        "امروز می‌خوایم درباره " . ($topWords[0] ?? "موضوعات مهم") . " صحبت کنیم!",
+        "یه نکته مهم درباره " . ($topWords[1] ?? "رشد پیج") . " که حتما باید بدونید...",
+        "اگر می‌خوای نتیجه بهتری بگیری، این پست رو از دست نده!",
+    ];
+
+    // ۲) رندوم از جملات بالا
+    $caption = $base[array_rand($base)];
+
+    // ۳) اضافه کردن هشتگ‌ها
+    $tags = array_slice($topHashtags, 0, 10);
+    $caption .= "\n\n";
+    foreach ($tags as $tag) {
+        $caption .= "#$tag ";
+    }
+
+    return trim($caption);
+}
+function generateCampaignTitle($topWords)
+{
+    $titles = [
+        "کمپین افزایش تعامل درباره " . ($topWords[0] ?? "موضوع مهم"),
+        "کمپین رشد فالوور با تمرکز روی " . ($topWords[1] ?? "محتوای پرتعامل"),
+        "کمپین محتوایی ۷ روزه"
+    ];
+
+    return $titles[array_rand($titles)];
+}
+function generateInsight($bestHour, $topWords, $topHashtags)
+{
+    return "
+📊 تحلیل خودکار از رفتار رقبای شما:
+
+⏰ بهترین زمان انتشار: " . ($bestHour ? "$bestHour:00" : "نامشخص") . "
+🔥 بیشترین موضوعات تکرار‌شده: " . implode('، ', array_slice($topWords,0,5)) . "
+🏷️ هشتگ‌های پرتکرار: #" . implode(' #', array_slice($topHashtags,0,5)) . "
+
+بر اساس رفتار رقیبا پیشنهاد می‌شود:
+- در همین ساعت پست منتشر کنید
+- از این هشتگ‌ها استفاده کنید
+- پست با موضوع «".$topWords[0]."» تعامل بهتری می‌گیرد
+    ";
+}
+$campaignCaption = generateSmartCaption($topWords, $topHashtags);
+$aiInsight = generateInsight($bestHour, $topWords, $topHashtags);
+$campaignTitle = generateCampaignTitle($topWords);
+// SuggestedCampaign::create([
+
+//     'instagram_profile_id'  => $idprofile,
+
+//     'campaign_title'        => $campaignTitle,
+//     'campaign_goal'         => 'engagement',
+//     'campaign_description'  => 'کمپین بر اساس تحلیل رقیبا و پست‌های اخیر ساخته شد.',
+
+//     'suggested_media_type'  => 'reels',
+//     'suggested_post_caption' => $campaignCaption,
+//     'suggested_post_caption_length' => mb_strlen($campaignCaption),
+//     'suggested_post_hashtags' => json_encode($topHashtags),
+//     'suggested_post_hashtags_count' => count($topHashtags),
+
+//     'suggested_post_time'   => $bestHour ? $bestHour . ':00' : null,
+
+//     'repeated_hashtags'     => json_encode($topHashtags),
+//     'repeated_words'        => json_encode($topWords),
+//     'competitor_analysis'   => "رقیبا در ساعت $bestHour بیشترین پست‌گذاری را دارند ...",
+
+//     'insights'              => $aiInsight,
+// ]);
+
+
+
+
+
+
+
+
+ $profiles = InstagramProfile::where('user_id', $id)->where('id' , $idprofile)->first();
+      $posts = SuggestedCampaign::where('instagram_profile_id', $idprofile)->get();
+    //   dd($posts);
+        return view ('admin.PanelAdminCampain',compact('profiles','posts','idprofile'));
     }
 
 

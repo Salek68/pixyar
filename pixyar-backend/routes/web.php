@@ -32,6 +32,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/AdminPanel/bestTimeHeatmap/{idprofile}', [AdminPanelController::class,'bestTimeHeatmap'])->name('AdminPanel.bestTimeHeatmap');
         Route::get('/AdminPanel/followersGrowth/{idprofile}', [AdminPanelController::class,'followersGrowth'])->name('AdminPanel.followersGrowth');
          Route::get('/AdminPanel/Raghib/{idprofile}', [AdminPanelController::class,'raghib'])->name('AdminPanel.Raghib');
+          Route::get('/AdminPanel/campain/{idprofile}', [AdminPanelController::class,'campain'])->name('AdminPanel.campain');
     Route::get('/select', [AdminPanelController::class,'select'])->name('AdminPanel.select');
     Route::get('/starter', [AdminPanelController::class,'starter'])->name('AdminPanel.starter');
     Route::post('/instagram/fetch', [InstagramController::class, 'fetchProfile'])->name('calldata');
