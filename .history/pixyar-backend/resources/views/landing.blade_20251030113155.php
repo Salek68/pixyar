@@ -110,7 +110,7 @@
     </div>
     <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-16 items-center px-6">
         <div class="relative person-wrapper" data-aos="fade-up">
-            <img src="https://pixonik.ir/wp-content/uploads/2025/04/Young-Man-e1741679700473-1.png" alt="Person">
+            <img src="{{ asset('img') }}" alt="Person">
             <div class="circle w-24 h-24 top-0 left-1/4"><span>تحلیل</span></div>
             <div class="circle w-20 h-20 top-1/2 left-0"><span>زمان‌بندی</span></div>
             <div class="circle w-16 h-16 top-2/3 right-1/4"><span>اتوماسیون</span></div>

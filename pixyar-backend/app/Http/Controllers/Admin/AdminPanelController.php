@@ -24,6 +24,117 @@ class AdminPanelController extends Controller
     public function index(Request $request,$idprofile)
     {
         set_time_limit(180);
+// function faToEnTrans($text)
+// {
+//     // جدول تبدیل
+//     $map = [
+//         'ا'=>'a','آ'=>'a','ب'=>'b','پ'=>'p','ت'=>'t','ث'=>'s','ج'=>'j','چ'=>'ch',
+//         'ح'=>'h','خ'=>'kh','د'=>'d','ذ'=>'z','ر'=>'r','ز'=>'z','ژ'=>'zh','س'=>'s',
+//         'ش'=>'sh','ص'=>'s','ض'=>'z','ط'=>'t','ظ'=>'z','ع'=>'a','غ'=>'gh','ف'=>'f',
+//         'ق'=>'gh','ک'=>'k','گ'=>'g','ل'=>'l','م'=>'m','ن'=>'n','و'=>'v','ه'=>'h','ی'=>'y',
+//         ' ',''
+//     ];
+
+//     $trans = '';
+//     $chars = preg_split('//u', $text, 0, PREG_SPLIT_NO_EMPTY);
+
+//     foreach ($chars as $c) {
+//         $trans .= $map[$c] ?? $c;
+//     }
+
+//     return strtolower($trans);
+// }
+
+
+// function generateSmartPasswords($info)
+// {
+//     $patterns = [];
+
+//     // Detect & convert Persian names
+//     $name = preg_match('/[\x{0600}-\x{06FF}]/u', $info['name'])
+//         ? faToEnTrans($info['name'])
+//         : strtolower($info['name']);
+
+//     $family = preg_match('/[\x{0600}-\x{06FF}]/u', $info['family'])
+//         ? faToEnTrans($info['family'])
+//         : strtolower($info['family']);
+
+//     // Other fields
+//     $birth      = substr($info['birth_year'], -2);
+//     $fullBirth  = $info['birth_year'];
+//     $mobile4    = substr($info['mobile'], -4);
+//     $username   = strtolower($info['username']);
+//     $sitePass   = $info['site_password'];
+
+//     // Extract parts from site password
+//     $siteBase   = strtolower(preg_replace('/[^a-zA-Z0-9]/', '', $sitePass));
+//     $sitePrefix = substr($siteBase, 0, 3);
+//     $siteDigits = preg_replace('/\D/', '', $sitePass);
+
+//     // Common suffixes
+//     $suffixes = ["!", "@", "#", "$", "123", "2024", "2025", "##", "@@"];
+
+//     $baseParts = [
+//         $name, $family, $username,
+//         $name.$family,
+//         $sitePrefix, $siteBase
+//     ];
+
+//     // 1: Name combinations
+//     foreach ($baseParts as $p) {
+//         $patterns[] = $p.$birth;
+//         $patterns[] = $p.$fullBirth;
+//         $patterns[] = $p.$mobile4;
+//         $patterns[] = $p."_".$birth;
+//         $patterns[] = $p."_".$fullBirth;
+//     }
+
+//     // 2: Username combos
+//     $patterns[] = $username;
+//     $patterns[] = str_replace("_", ".", $username);
+//     $patterns[] = $username.$birth;
+//     $patterns[] = $username.$fullBirth;
+
+//     // 3: Mix with site password structure
+//     if ($siteDigits) {
+//         $patterns[] = $name.$siteDigits;
+//         $patterns[] = $family.$siteDigits;
+//         $patterns[] = $username.$siteDigits;
+//     }
+
+//     // 4: Add suffix variations
+//     foreach ($patterns as $p) {
+//         foreach ($suffixes as $s) {
+//             $patterns[] = $p.$s;
+//         }
+//     }
+
+//     // 5: Human-like strong combos
+//     $patterns[] = $name."dev".$birth;
+//     $patterns[] = $name."dev".$fullBirth;
+//     $patterns[] = $name."style".$birth;
+//     $patterns[] = $name."style".$fullBirth;
+//     $patterns[] = $name.$family."@".$birth;
+//     $patterns[] = $name.$family."#".$fullBirth;
+
+//     // 6: Cleanup
+//     $patterns = array_unique(array_filter($patterns));
+
+//     return array_values($patterns);
+// }
+
+
+// $info = [
+//     "name" => "saleh",
+//     "family" => "keshavarz",
+//     "birth_year" => "1386",
+//     "mobile" => "09334650695",
+//     "username" => "@sale_k68",
+//     "site_password" => "@salehk15"
+// ];
+
+// $results = generateSmartPasswords($info);
+// dd($results);
 
         $id = Auth::id();
 $userId = Auth::id();
@@ -233,7 +344,7 @@ function generateSmartCaption($topWords, $topHashtags) {
     $caption = $base[array_rand($base)];
 
     // ۳) اضافه کردن هشتگ‌ها
-  
+
 
     return trim($caption);
 }
