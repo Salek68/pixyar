@@ -29,6 +29,10 @@
             <label class="block mb-1 font-semibold">ID پیج</label>
             <input type="text" v-model="form.page_id" class="w-full border px-3 py-2 rounded" required>
         </div>
+           <div>
+            <label class="block mb-1 font-semibold">موضوع پیج</label>
+            <input type="text" v-model="form.type" class="w-full border px-3 py-2 rounded" required>
+        </div>
 
         {{-- <div>
             <label class="block mb-1 font-semibold">انتخاب پلن</label>
@@ -59,7 +63,8 @@ const app = Vue.createApp({
     data() {
         return {
             form: {
-                page_id: ''
+                page_id: '',
+                type:''
             },
             message: {
                 text: '',
@@ -80,6 +85,7 @@ const app = Vue.createApp({
                 this.message.type = 'success';
                 this.form.page_id = '';
                 this.form.plan = '';
+                this.form.type = '';
 
                  setTimeout(() => {
             window.location.href = "{{ route('AdminPanel.select') }}";

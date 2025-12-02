@@ -41,19 +41,24 @@ https://proxy-steel-beta-96.vercel.app/api/proxy-image?url={{ urlencode($profile
         @endif
 
         {{-- هشتگ‌ها --}}
-       {{-- @php
+ @php
+    // اگر رشته JSON هست → decode کن
     $hashtags = is_array($post->suggested_post_hashtags)
         ? $post->suggested_post_hashtags
-        : explode(',', $post->suggested_post_hashtags);
+        : json_decode($post->suggested_post_hashtags, true);
+
+    // اگر json_decode شکست خورد، آرایه خالی بساز
+    $hashtags = is_array($hashtags) ? $hashtags : [];
 @endphp
 
 @if(count($hashtags) > 0)
     <div class="hashtags font-size-11 mb-1 flex flex-wrap gap-2">
         @foreach($hashtags as $hashtag)
-            <span class="text-blue inline-block">#{{ trim($hashtag) }}</span>
+            <span class="text-blue inline-block">{{ trim($hashtag) }}</span>
         @endforeach
     </div>
-@endif --}}
+@endif
+
 
 
         {{-- تعداد لایک و کامنت --}}

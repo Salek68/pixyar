@@ -26,13 +26,15 @@ Route::post('/logout', [AuthController::class,'logout']);
 
 
 
-Route::middleware('auth:sanctum')->group(function () {
-    Route::get('/AdminPanel/{id}', [AdminPanelController::class,'index'])->name('AdminPanel.Index');
+Route::middleware(['auth:sanctum', 'plan:pro,business'])->group(function () {
     Route::get('/AdminPanel/{idprofile}/post/{idpost}', [AdminPanelController::class,'showpost'])->name('AdminPanel.Sh');
+    Route::get('/AdminPanel/Raghib/{idprofile}', [AdminPanelController::class,'raghib'])->name('AdminPanel.Raghib');
+    Route::get('/AdminPanel/campain/{idprofile}', [AdminPanelController::class,'campain'])->name('AdminPanel.campain');
+});
+Route::middleware(['auth:sanctum'])->group(function () {
+    Route::get('/AdminPanel/{id}', [AdminPanelController::class,'index'])->name('AdminPanel.Index');
     Route::get('/AdminPanel/bestTimeHeatmap/{idprofile}', [AdminPanelController::class,'bestTimeHeatmap'])->name('AdminPanel.bestTimeHeatmap');
         Route::get('/AdminPanel/followersGrowth/{idprofile}', [AdminPanelController::class,'followersGrowth'])->name('AdminPanel.followersGrowth');
-         Route::get('/AdminPanel/Raghib/{idprofile}', [AdminPanelController::class,'raghib'])->name('AdminPanel.Raghib');
-          Route::get('/AdminPanel/campain/{idprofile}', [AdminPanelController::class,'campain'])->name('AdminPanel.campain');
     Route::get('/select', [AdminPanelController::class,'select'])->name('AdminPanel.select');
     Route::get('/starter', [AdminPanelController::class,'starter'])->name('AdminPanel.starter');
     Route::post('/instagram/fetch', [InstagramController::class, 'fetchProfile'])->name('calldata');
@@ -40,6 +42,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('/instagram/{id}', [InstagramController::class, 'delete']);
     Route::get('/instagram/analytics', [InstagramController::class, 'analytics']);
 });
+
 
 
 Route::post('/fetch-posts', [InstagramPostsController::class, 'fetchPosts']);

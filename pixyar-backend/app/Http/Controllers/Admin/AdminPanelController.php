@@ -27,11 +27,23 @@ class AdminPanelController extends Controller
 
         $id = Auth::id();
 $userId = Auth::id();
+$profiles = InstagramProfile::where('user_id', $id)->where('id' , $idprofile)->first();
+
+// /////
+
+
+//   $responsef = Http::withoutVerifying()->get("https://proxy-steel-beta-96.vercel.app/api/proxy", [
+//     'url' => 'https://instagram-social-api.p.rapidapi.com/v1/followers',
+//     'host' => 'instagram-social-api.p.rapidapi.com',
+//     'username_or_id_or_url' => $profiles->username
+// ]);
+
+// dd($responsef->json());
+// ///
 
 
 
 
-       $profiles = InstagramProfile::where('user_id', $id)->where('id' , $idprofile)->first();
      $snapshot = InstagramProfileSnapshot::where('profile_id', $profiles->id)
             ->orderBy('collected_at', 'desc')
             ->first();
@@ -80,9 +92,10 @@ $userId = Auth::id();
       $responsePostC = Http::withoutVerifying()->get("https://proxy-steel-beta-96.vercel.app/api/proxy", [
     'url' => 'https://instagram-social-api.p.rapidapi.com/v1/search_posts',
     'host' => 'instagram-social-api.p.rapidapi.com',
-    'search_query' => $profiles->full_name
+    'search_query' => $profiles->type
 ]);
     $postsDatac = $responsePostC->json()['data']['items'] ?? [];
+
 foreach ($postsDatac as $post) {
 
     // 1) استخراج امن caption
@@ -220,11 +233,7 @@ function generateSmartCaption($topWords, $topHashtags) {
     $caption = $base[array_rand($base)];
 
     // ۳) اضافه کردن هشتگ‌ها
-    $tags = array_slice($topHashtags, 0, 10);
-    $caption .= "\n\n";
-    foreach ($tags as $tag) {
-        $caption .= "#$tag ";
-    }
+  
 
     return trim($caption);
 }
@@ -253,34 +262,85 @@ function generateInsight($bestHour, $topWords, $topHashtags)
 - پست با موضوع «".$topWords[0]."» تعامل بهتری می‌گیرد
     ";
 }
-$campaignCaption = generateSmartCaption($topWords, $topHashtags);
+$lastCampaign = SuggestedCampaign::where('instagram_profile_id', $idprofile)
+    ->orderBy('created_at', 'desc')
+    ->first();
+if(!$lastCampaign){
+   $campaignCaption = generateSmartCaption($topWords, $topHashtags);
 $aiInsight = generateInsight($bestHour, $topWords, $topHashtags);
 $campaignTitle = generateCampaignTitle($topWords);
-// SuggestedCampaign::create([
 
-//     'instagram_profile_id'  => $idprofile,
+SuggestedCampaign::create([
 
-//     'campaign_title'        => $campaignTitle,
-//     'campaign_goal'         => 'engagement',
-//     'campaign_description'  => 'کمپین بر اساس تحلیل رقیبا و پست‌های اخیر ساخته شد.',
+    'instagram_profile_id'  => $idprofile,
 
-//     'suggested_media_type'  => 'reels',
-//     'suggested_post_caption' => $campaignCaption,
-//     'suggested_post_caption_length' => mb_strlen($campaignCaption),
-//     'suggested_post_hashtags' => json_encode($topHashtags),
-//     'suggested_post_hashtags_count' => count($topHashtags),
+    'campaign_title'        => $campaignTitle,
+    'campaign_goal'         => 'engagement',
+    'campaign_description'  => 'کمپین بر اساس تحلیل رقیبا و پست‌های اخیر ساخته شد.',
 
-//     'suggested_post_time'   => $bestHour ? $bestHour . ':00' : null,
+    'suggested_media_type'  => 'reels',
+    'suggested_post_caption' => $campaignCaption,
+    'suggested_post_caption_length' => mb_strlen($campaignCaption),
+    'suggested_post_hashtags' => json_encode($topHashtags),
+    'suggested_post_hashtags_count' => count($topHashtags),
 
-//     'repeated_hashtags'     => json_encode($topHashtags),
-//     'repeated_words'        => json_encode($topWords),
-//     'competitor_analysis'   => "رقیبا در ساعت $bestHour بیشترین پست‌گذاری را دارند ...",
+    'suggested_post_time'   => $bestHour ? $bestHour . ':00' : null,
 
-//     'insights'              => $aiInsight,
-// ]);
+    'repeated_hashtags'     => json_encode($topHashtags),
+    'repeated_words'        => json_encode($topWords),
+    'competitor_analysis'   => "رقیبا در ساعت $bestHour بیشترین پست‌گذاری را دارند ...",
+
+    'insights'              => $aiInsight,
+]);
+
+}
+else{
+$twoWeeksAgo = Carbon::now()->subWeeks(2);
+
+// اگر created_at رشته است → parse با UTC
+$createdAt = $lastCampaign->created_at instanceof \Carbon\Carbon
+    ? $lastCampaign->created_at
+    : Carbon::parse($lastCampaign->created_at, 'UTC');
+
+// مطمئن شو هر دو زمان در یک timezone هستند
+$createdAt->setTimezone(config('app.timezone'));
+
+// اگر کمپین وجود دارد و از ۲ هفته گذشته → حذفش کن
+if ($lastCampaign &&$createdAt->lt($twoWeeksAgo)) {
+    $lastCampaign->delete();
+    $campaignCaption = generateSmartCaption($topWords, $topHashtags);
+$aiInsight = generateInsight($bestHour, $topWords, $topHashtags);
+$campaignTitle = generateCampaignTitle($topWords);
+
+SuggestedCampaign::create([
+
+    'instagram_profile_id'  => $idprofile,
+
+    'campaign_title'        => $campaignTitle,
+    'campaign_goal'         => 'engagement',
+    'campaign_description'  => 'کمپین بر اساس تحلیل رقیبا و پست‌های اخیر ساخته شد.',
+
+    'suggested_media_type'  => 'reels',
+    'suggested_post_caption' => $campaignCaption,
+    'suggested_post_caption_length' => mb_strlen($campaignCaption),
+    'suggested_post_hashtags' => json_encode($topHashtags),
+    'suggested_post_hashtags_count' => count($topHashtags),
+
+    'suggested_post_time'   => $bestHour ? $bestHour . ':00' : null,
+
+    'repeated_hashtags'     => json_encode($topHashtags),
+    'repeated_words'        => json_encode($topWords),
+    'competitor_analysis'   => "رقیبا در ساعت $bestHour بیشترین پست‌گذاری را دارند ...",
+
+    'insights'              => $aiInsight,
+]);
 
 
 
+
+
+}
+}
 
 
 
