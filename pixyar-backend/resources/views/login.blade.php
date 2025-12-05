@@ -109,7 +109,7 @@ const app = Vue.createApp({
         alert('ورود موفقیت آمیز بود!');
         // اینجا می‌تونی کارهای بعد از لاگین مثل ذخیره توکن انجام بدی
          setTimeout(() => {
-            window.location.href = "{{ route('AdminPanel.starter') }}";
+            window.location.href = "{{ route('AdminPanel.select') }}";
         }, 500);
       } catch (err) {
         this.error = err.response?.data?.message || 'خطا در ورود';
