@@ -126,7 +126,7 @@
   <div class="absolute inset-0 -z-10">
     <div class="swiper heroSwiper h-full">
       <div class="swiper-wrapper h-full">
-        <div class="swiper-slide bg-cover bg-center" style="background-image:url('https://bdbd.ir/wp-content/uploads/2022/09/Layer-3.png');"></div>
+        <div class="swiper-slide bg-cover bg-center" style="background-image:url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTvCItpd_Kx40ETB5AGFmJSgfTTgybrDVYe7A&s');"></div>
         <div class="swiper-slide bg-cover bg-center" style="background-image:url('https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&w=1950&q=80');"></div>
         <div class="swiper-slide bg-cover bg-center" style="background-image:url('https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1950&q=80');"></div>
       </div>
