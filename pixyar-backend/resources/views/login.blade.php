@@ -10,7 +10,7 @@
 </head>
 <body class="bg-gray-100 flex items-center justify-center h-screen">
 
-<div id="app" class="w-full max-w-md">
+<div id="app" class="w-full max-w-md" style="margin-top: auto; margin-bottom: auto;">
   <div class="bg-white rounded-xl shadow-lg p-8">
 
     <!-- سوئیچ بین فرم ورود و ثبت نام -->
@@ -42,9 +42,10 @@
         <label class="block mb-1 font-semibold">رمز عبور</label>
         <input type="password" v-model="loginForm.password" class="w-full border px-3 py-2 rounded" required>
       </div>
-      <button type="submit" class="w-full bg-indigo-600 text-white py-2 rounded font-bold hover:bg-indigo-700">
-        ورود
+      <button   :disabled="loading" type="submit" class="w-full bg-indigo-600 text-white py-2 rounded font-bold hover:bg-indigo-700">
+   @{{ loading ? 'در حال ورود...' : 'ورود' }}
       </button>
+
     </form>
 
     <!-- فرم ثبت نام -->
@@ -57,7 +58,7 @@
         <label class="block mb-1 font-semibold">ایمیل</label>
         <input type="email" v-model="registerForm.email" class="w-full border px-3 py-2 rounded" required>
       </div>
-       <div class="mb-4">
+       {{-- <div class="mb-4">
        <label class="block mb-1 font-semibold">انتخاب پلن</label>
             <select v-model="registerForm.plan" class="w-full border px-3 py-2 rounded" required>
                 <option value="">انتخاب کنید</option>
@@ -65,7 +66,52 @@
                 <option value="pro">Pro</option>
                 <option value="business">business</option>
             </select>
-      </div>
+      </div> --}}
+      <!-- انتخاب پلن با کارت -->
+<div class="mb-6">
+  <label class="block mb-2 font-semibold text-lg"> انتخاب پلن یک ماهه</label>
+
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+
+    <!-- پلن Free -->
+    <div
+      @click="registerForm.plan='free'"
+      :class="registerForm.plan==='free' ? 'border-indigo-600 ring-2 ring-indigo-400' : 'border-gray-300'"
+      class="cursor-pointer border rounded-xl p-4 text-center hover:shadow-md transition"
+    >
+      <h3 class="font-bold text-xl mb-2">Free</h3>
+      <p class="text-gray-600 text-sm mb-2">مناسب شروع کار مدیریت 1 اکانت بدون ابزار های اختصاصی</p>
+      <p class="font-bold text-indigo-600 text-lg">0 تومان</p>
+    </div>
+
+    <!-- پلن Pro -->
+    <div
+      @click="registerForm.plan='pro'"
+      :class="registerForm.plan==='pro' ? 'border-indigo-600 ring-2 ring-indigo-400' : 'border-gray-300'"
+      class="cursor-pointer border rounded-xl p-4 text-center hover:shadow-md transition"
+    >
+      <h3 class="font-bold text-xl mb-2">Pro</h3>
+      <p class="text-gray-600 text-sm mb-2">برای کاربران حرفه‌ای مدیریت 2 اکانت</p>
+      <p class="font-bold text-indigo-600 text-lg">149,000 تومان</p>
+    </div>
+
+    <!-- پلن Business -->
+    <div
+      @click="registerForm.plan='business'"
+      :class="registerForm.plan==='business' ? 'border-indigo-600 ring-2 ring-indigo-400' : 'border-gray-300'"
+      class="cursor-pointer border rounded-xl p-4 text-center hover:shadow-md transition"
+    >
+      <h3 class="font-bold text-xl mb-2">Business</h3>
+      <p class="text-gray-600 text-sm mb-2">برای تیم‌ها و سازمان‌ها مدیریت 5 اکانت</p>
+      <p class="font-bold text-indigo-600 text-lg">349,000 تومان</p>
+    </div>
+
+  </div>
+
+  <p v-if="!registerForm.plan" class="text-red-500 text-sm mt-2">
+    لطفاً یک پلن انتخاب کنید.
+  </p>
+</div>
       <div class="mb-4">
         <label class="block mb-1 font-semibold">رمز عبور</label>
         <input type="password" v-model="registerForm.password" class="w-full border px-3 py-2 rounded" required>
@@ -86,6 +132,7 @@
 const app = Vue.createApp({
   data() {
     return {
+      loading: false,
       mode: 'login', // login یا register
       error: null,
       loginForm: {
@@ -103,6 +150,7 @@ const app = Vue.createApp({
   },
   methods: {
     async submitLogin() {
+        this.loading = true;
       this.error = null;
       try {
         const res = await axios.post('/login', this.loginForm);

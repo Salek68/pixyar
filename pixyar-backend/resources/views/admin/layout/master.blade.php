@@ -61,7 +61,9 @@
     <li class="item-li i-categories"><a href="{{ route('AdminPanel.bestTimeHeatmap' ,['idprofile' => $idprofile]) }}">  تقویم محتوایی </a></li>
     <li class="item-li i-discounts"><a href="{{ route('AdminPanel.followersGrowth' ,['idprofile' => $idprofile]) }}">  نمودار رشد فالوئرها</a></li>
     <li class="item-li i-notification__management"><a href="{{ route('AdminPanel.Raghib' ,['idprofile' => $idprofile]) }}">رقبا چه کردند؟ </a></li>
-     <li class="item-li i-notification__management"><a href="{{ route('AdminPanel.campain' ,['idprofile' => $idprofile]) }}">  کمپین پیشنهادی    </a></li>
+     <li class="item-li i-tickets"><a href="{{ route('AdminPanel.campain' ,['idprofile' => $idprofile]) }}">  کمپین پیشنهادی    </a></li>
+     <li class="item-li i-user__inforamtion"><a href="{{ route('AdminPanel.select') }}">   مدیریت اکانت دیگر    </a></li>
+      <li class="item-li i-my__purchases"><a href="{{ route('AdminPanel.starter') }}">   افزودن اکانت    </a></li>
     </ul>
     </ul>
 
