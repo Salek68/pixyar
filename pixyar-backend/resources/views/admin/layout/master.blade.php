@@ -94,7 +94,7 @@
                     </div>
                 </div>
             </div>
-            <a href="#logout" class="logout" title="خروج"></a>
+            <a href="{{ route('login') }}" class="logout" title="خروج"></a>
         </div>
     </div>
     <div class="breadcrumb">

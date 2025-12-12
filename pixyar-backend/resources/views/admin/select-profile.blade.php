@@ -8,7 +8,12 @@
 </head>
 <body>
 
-<div id="app"></div>
+<div id="app">
+    <button class="swal2-confirm swal2-styled" style="display:block;margin:5px 0;width:100%;"><a style="
+    text-decoration: none;
+    color: red;
+" href="{{ route('AdminPanel.starter') }}">افزودن پروفایل</a></button>
+</div>
 
 <script>
 const app = Vue.createApp({
